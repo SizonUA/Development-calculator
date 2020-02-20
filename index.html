@@ -24,7 +24,7 @@
 	<meta name="msapplication-TileImage" content="favicon/ms-icon-144x144.png">
 	<meta name="theme-color" content="#ffffff">
 	<link rel="stylesheet" href="css/style.min.css">
-	<script src="script/script.js"></script>
+	<script src="script/script.js" defer></script>
 	<title>Калькулятор стоимости верстки</title>
 </head>
 
@@ -40,8 +40,8 @@
 			<button class="button start-button">Рассчитать...</button>
 		</div>
 
-		<section class="main-form" style="display: block;">
-			<!-- none -->
+		<section class="main-form" style="display: none;">
+<!-- block -->
 			<form class="form-calculate" method="POST" action="server.php" enctype="multipart/form-data">
 
 				<fieldset class="first-fieldset">
@@ -68,8 +68,8 @@
 
 				<div class="total_price">
 					<span class="total_price__wrap">
-						<span class="total_price__sum">4000</span>
-						<span class="total_price__val">₽</span>
+						<span class="total_price__sum">1000</span>
+						<span class="total_price__val">₴</span>
 					</span>
 				</div>
 
@@ -85,7 +85,7 @@
 				<fieldset>
 					<legend>Адаптировать сайт под смартфоны и&nbsp;планшеты?</legend>
 					<label class="switcher">
-						<input type="checkbox" class="calc-handler" name="option" id="adapt" value="adapt">
+						<input type="checkbox" class="calc-handler adapt" name="option" id="adapt" value="adapt">
 						<span class="switcher__indicator"></span>
 						<span class="checkbox-label adapt_value">Нет</span>
 					</label>
@@ -94,7 +94,7 @@
 				<fieldset>
 					<legend>Нужно ли разрабатывать дизайн сайта под мобильные устройства?</legend>
 					<label class="switcher">
-						<input type="checkbox" class="calc-handler" name="option" id="mobileTemplates" value="mobileTemplates">
+						<input type="checkbox" class="calc-handler adapt_mobile" name="option" id="mobileTemplates" value="mobileTemplates" disabled>
 						<span class="switcher__indicator"></span>
 						<span class="checkbox-label mobileTemplates_value">Нет</span>
 					</label>
