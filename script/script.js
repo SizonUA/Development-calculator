@@ -50,61 +50,53 @@ const startButton = document.querySelector(".start-button"),
   firstFieldset = document.querySelector('.first-fieldset');
 
 // Begin Function
+const declOfNum = (n, titles, from) =>
+  n +
+  " " +
+  titles[
+    from ?
+    n % 10 === 1 && n % 100 !== 11 ?
+    1 :
+    2 :
+    n % 10 === 1 && n % 100 !== 11 ?
+    0 :
+    n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ?
+    1 :
+    2
+  ];
 
-function declOfNum(n, titles, from) {
-  return (
-    n +
-    " " +
-    titles[
-      from ?
-      n % 10 === 1 && n % 100 !== 11 ?
-      1 :
-      2 :
-      n % 10 === 1 && n % 100 !== 11 ?
-      0 :
-      n % 10 >= 2 && n % 10 <= 4 && (n % 100 < 10 || n % 100 >= 20) ?
-      1 :
-      2
-    ]
-  );
-}
+const showElem = elem => elem.style.display = "block";
 
-function showElem(elem) {
-  elem.style.display = "block";
-}
+const hideElem = elem => elem.style.display = "none";
 
-function hideElem(elem) {
-  elem.style.display = "none";
-}
-
-function dopOptionsString() {
+const dopOptionsString = (yandex, google, order) => {
   let str = "";
 
-  if (metrikaYandex.checked || analyticsGoogle.checked || sendOrder.checked) {
+  if (yandex || google || order) {
     str += "Подключим";
 
-    if (metrikaYandex.checked) {
+    if (yandex) {
       str += " Яндекс Метрику";
 
-      if (analyticsGoogle.checked && sendOrder.checked) {
+      if (google && order) {
         str += ", Гугл Аналитику и отправку заявок на почту."
-        return
+        return str;
       }
 
-      if (analyticsGoogle.checked || sendOrder.checked) {
+      if (google || order) {
         str += " и";
       }
     }
 
-    if (analyticsGoogle.checked) {
+    if (google) {
       str += " Гугл Аналитику";
 
-      if (sendOrder.checked) {
+      if (order) {
         str += " и";
       }
     }
 
-    if (sendOrder.checked) {
+    if (order) {
       str += " отправку заявок на почту";
     }
 
@@ -112,9 +104,9 @@ function dopOptionsString() {
   }
 
   return str;
-}
+};
 
-function renderTextContent(total, site, maxDay, minDay) {
+const renderTextContent = (total, site, maxDay, minDay) => {
   typeSite.textContent = site;
   totalPriceSum.textContent = total;
   maxDeadline.textContent = declOfNum(maxDay, DAY_STRING, true);
@@ -136,17 +128,25 @@ function renderTextContent(total, site, maxDay, minDay) {
       ? "Установим панель админстратора, чтобы вы могли самостоятельно менять содержание на сайте без разработчика."
       : ""
   }
-  ${dopOptionsString()}
+  ${dopOptionsString(metrikaYandex.checked, analyticsGoogle.checked, sendOrder.checked)}
   `;
-}
+};
 
-function priceCalculation(elem = {}) {
+const priceCalculation = (elem = {}) => {
+  const {
+    whichSite,
+    price,
+    deadlineDay,
+    deadlinePercent
+  } = DATA;
+
+
   let result = 0,
     index = 0,
     options = [],
     site = "",
-    maxDeadlineDay = DATA.deadlineDay[index][1],
-    minDeadlineDay = DATA.deadlineDay[index][0],
+    maxDeadlineDay = deadlineDay[index][1],
+    minDeadlineDay = deadlineDay[index][0],
     overPercent = 0;
 
   if (elem.name === "whichSite") {
@@ -160,30 +160,30 @@ function priceCalculation(elem = {}) {
 
   for (const item of formCalculate.elements) {
     if (item.name === "whichSite" && item.checked) {
-      index = DATA.whichSite.indexOf(item.value);
+      index = whichSite.indexOf(item.value);
       site = item.dataset.site;
-      maxDeadlineDay = DATA.deadlineDay[index][1];
-      minDeadlineDay = DATA.deadlineDay[index][0];
+      maxDeadlineDay = deadlineDay[index][1];
+      minDeadlineDay = deadlineDay[index][0];
     } else if (item.classList.contains("calc-handler") && item.checked) {
       options.push(item.value);
     } else if (item.classList.contains("want-faster") && item.checked) {
       const overDay = maxDeadlineDay - rangeDeadline.value;
-      overPercent = overDay * (DATA.deadlinePercent[index] / 100);
+      overPercent = overDay * (deadlinePercent[index] / 100);
     }
   }
 
-  result += DATA.price[index];
+  result += price[index];
 
-  options.forEach(function (key) {
+  options.forEach(key => {
     if (typeof DATA[key] === "number") {
       if (key === "sendOrder") {
         result += DATA[key];
       } else {
-        result += (DATA.price[index] * DATA[key]) / 100;
+        result += (price[index] * DATA[key]) / 100;
       }
     } else {
       if (key === "desktopTemplates") {
-        result += (DATA.price[index] * DATA[key][index]) / 100;
+        result += (price[index] * DATA[key][index]) / 100;
       } else {
         result += DATA[key][index];
       }
@@ -192,9 +192,9 @@ function priceCalculation(elem = {}) {
 
   result += result * overPercent;
   renderTextContent(result, site, maxDeadlineDay, minDeadlineDay);
-}
+};
 
-function handlerCallbackForm(event) {
+const handlerCallbackForm = event => {
   const target = event.target;
 
   if (adapt.checked) {
@@ -212,9 +212,9 @@ function handlerCallbackForm(event) {
   if (target.classList.contains("calc-handler")) {
     priceCalculation(target);
   }
-}
+};
 
-function moveBackTotal() {
+const moveBackTotal = () => {
   if (document.documentElement.getBoundingClientRect().bottom > document.documentElement.clientHeight + 200) {
     totalPrice.classList.remove('totalPriceBottom');
     firstFieldset.after(totalPrice);
@@ -223,24 +223,23 @@ function moveBackTotal() {
   }
 }
 
-function moveTotal() {
+const moveTotal = () => {
   if (document.documentElement.getBoundingClientRect().bottom < document.documentElement.clientHeight + 200) {
     totalPrice.classList.add('totalPriceBottom');
     endButton.before(totalPrice);
     window.removeEventListener('scroll', moveTotal);
     window.addEventListener('scroll', moveBackTotal);
   }
-}
-
+};
 // End Function
 
-startButton.addEventListener("click", function () {
+startButton.addEventListener("click", () => {
   showElem(mainForm);
   hideElem(firstScreen);
   window.addEventListener('scroll', moveTotal);
 });
 
-endButton.addEventListener("click", function () {
+endButton.addEventListener("click", () => {
   for (const elem of formCalculate.elements) {
     if (elem.tagName === "FIELDSET") {
       hideElem(elem);
